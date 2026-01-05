@@ -1,0 +1,22 @@
+[project]
+name = "inventory-backend"
+version = "0.1.0"
+description = "Inventory management backend API"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-dotenv>=1.0.1",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.6.0",
+    "azure-identity>=1.19.0",
+    "azure-cosmos>=4.7.0",
+    "aiohttp>=3.9.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
