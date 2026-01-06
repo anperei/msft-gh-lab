@@ -26,6 +26,12 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
   tags: tags
   kind: 'GlobalDocumentDB'
   properties: {
+    publicNetworkAccess: 'Enabled'
+    ipRules: [
+      {
+        ipAddressOrRange: '0.0.0.0'
+      }
+    ]
     databaseAccountOfferType: 'Standard'
     enableFreeTier: enableFreeTier
     consistencyPolicy: {
