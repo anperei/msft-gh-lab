@@ -2,7 +2,8 @@
 
 A simple inventory management application built with React and FastAPI, deployed to Azure Container Apps.
 
-<img width="949" height="383" alt="image" src="https://github.com/user-attachments/assets/7c233e93-2a27-45f3-8db6-390f11979bb2" />
+<img alt="image" src="https://github.com/user-attachments/assets/6ed5515b-8d31-436a-ac79-41aee1743d88" />
+
 
 
 ## Features
