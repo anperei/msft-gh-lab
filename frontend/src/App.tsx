@@ -81,7 +81,7 @@ function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>📦 Inventory Management</h1>
+        <h1>💻 Device Management</h1>
       </header>
       
       <main className="app-main">
