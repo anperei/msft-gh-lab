@@ -12,6 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from db.cosmos import close_cosmos_client, get_cosmos_client
 from schemas import DeviceCreate, DeviceUpdate, DeviceResponse
 import repositories as device_repo
+import os
 
 # Configure logging
 logging.basicConfig(
@@ -49,14 +50,20 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS middleware
+# CORS middleware - configured from environment variable
+# In production, set ALLOWED_ORIGINS to specific frontend domain(s)
+allowed_origins_str = os.environ.get("ALLOWED_ORIGINS", "*")
+allowed_origins = [origin.strip() for origin in allowed_origins_str.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+logger.info(f"CORS configured with allowed origins: {allowed_origins}")
 
 
 @app.get("/health")

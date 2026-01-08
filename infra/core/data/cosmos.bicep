@@ -58,7 +58,9 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2024-11-15' = {
     ] : []
     
     // Disable key-based access for better security, rely on RBAC only
-    disableKeyBasedMetadataWriteAccess: false
+    disableKeyBasedMetadataWriteAccess: true
+    // Disable local (key-based) authentication - force RBAC only
+    disableLocalAuth: true
   }
 }
 

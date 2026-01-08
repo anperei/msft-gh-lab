@@ -12,6 +12,15 @@ param location string
 @description('Whether to enable Cosmos DB Free Tier (only one per subscription)')
 param cosmosFreeTierEnabled bool = false
 
+@description('Backend container image name')
+param backendImageName string = ''
+
+@description('Frontend container image name')
+param frontendImageName string = ''
+
+@description('Allowed CORS origins for backend API (comma-separated)')
+param allowedOrigins string = '*'
+
 // Tags that should be applied to all resources
 var tags = {
   'azd-env-name': environmentName
@@ -69,6 +78,25 @@ module cosmos 'core/data/cosmos.bicep' = {
   }
 }
 
+// Frontend Container App (deployed first so backend can reference its URL)
+module frontend 'core/host/container-app.bicep' = {
+  name: 'frontend'
+  scope: rg
+  params: {
+    name: 'ca-frontend-${resourceToken}'
+    location: location
+    tags: tags
+    serviceName: 'frontend'
+    containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
+    containerRegistryName: containerRegistry.outputs.name
+    containerName: 'frontend'
+    containerImage: !empty(frontendImageName) ? frontendImageName : 'nginx:latest'
+    targetPort: 80
+    minReplicas: 1
+    env: []  // Backend URL will be set after backend is created
+  }
+}
+
 // Backend Container App (uses system-assigned managed identity for Cosmos DB access)
 module backend 'core/host/container-app.bicep' = {
   name: 'backend'
@@ -81,10 +109,10 @@ module backend 'core/host/container-app.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
     containerRegistryName: containerRegistry.outputs.name
     containerName: 'backend'
-    containerImage: 'nginx:latest' // Placeholder, will be replaced by azd
+    containerImage: !empty(backendImageName) ? backendImageName : 'nginx:latest'
     targetPort: 8000
     minReplicas: 1
-    enableProbes: false  // Disable probes to prevent timeout during provisioning
+    enableProbes: true  // Enable health probes for reliability
     enableManagedIdentity: true  // Use system-assigned managed identity
     external: false  // Internal: only accessible within Container Apps Environment
     allowInsecure: true  // Allow HTTP for internal container-to-container communication
@@ -101,8 +129,16 @@ module backend 'core/host/container-app.bicep' = {
         name: 'COSMOS_DEVICES_CONTAINER'
         value: cosmosDevicesContainerName
       }
+      {
+        name: 'ALLOWED_ORIGINS'
+        // Automatically allow the frontend URL + custom origins parameter
+        value: !empty(allowedOrigins) && allowedOrigins != '*' ? '${frontend.outputs.uri},${allowedOrigins}' : frontend.outputs.uri
+      }
     ]
   }
+  dependsOn: [
+    frontend
+  ]
 }
 
 // Cosmos DB RBAC role assignment for backend managed identity
@@ -116,9 +152,9 @@ module cosmosRbac 'core/data/cosmos-rbac.bicep' = {
   }
 }
 
-// Frontend Container App
-module frontend 'core/host/container-app.bicep' = {
-  name: 'frontend'
+// Update frontend with backend URL (requires second deployment after backend exists)
+module frontendUpdate 'core/host/container-app.bicep' = {
+  name: 'frontend-update'
   scope: rg
   params: {
     name: 'ca-frontend-${resourceToken}'
@@ -128,9 +164,9 @@ module frontend 'core/host/container-app.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironment.outputs.name
     containerRegistryName: containerRegistry.outputs.name
     containerName: 'frontend'
-    containerImage: 'nginx:latest' // Placeholder, will be replaced by azd
+    containerImage: !empty(frontendImageName) ? frontendImageName : 'nginx:latest'
     targetPort: 80
-    minReplicas: 0
+    minReplicas: 1
     env: [
       {
         name: 'BACKEND_URL'
@@ -138,6 +174,9 @@ module frontend 'core/host/container-app.bicep' = {
       }
     ]
   }
+  dependsOn: [
+    backend
+  ]
 }
 
 // Outputs
@@ -145,6 +184,6 @@ output AZURE_LOCATION string = location
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = containerRegistry.outputs.loginServer
 output AZURE_CONTAINER_REGISTRY_NAME string = containerRegistry.outputs.name
 output BACKEND_URI string = backend.outputs.uri
-output FRONTEND_URI string = frontend.outputs.uri
+output FRONTEND_URI string = frontendUpdate.outputs.uri
 output COSMOS_ENDPOINT string = cosmos.outputs.endpoint
 output COSMOS_DB_NAME string = cosmosDatabaseName
