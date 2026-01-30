@@ -10,6 +10,9 @@ You’re ready when you can check all of these:
 - [ ] I have activated my **Azure Visual Studio subscription** and linked it to **GitHub Enterprise**
 - [ ] My **GitHub account** is linked to (or can authenticate with) my **Microsoft account**
 - [ ] I have an **Azure subscription** and can create resources (at least **Contributor** access)
+
+Optional, only needed if not using Codespaces:
+
 - [ ] I have **GitHub Copilot** enabled and the **VS Code extension** installed
 - [ ] I have **GitHub Copilot Chat** enabled and the **VS Code extension** installed
 - [ ] I have **VS Code**, **Git**, and **Docker** installed locally
@@ -103,6 +106,8 @@ Complete this after your Azure subscription is set up.
 - GitHub Enterprise access is available/assigned per the Microsoft Learn instructions.
 
 ---
+
+## _Optional steps (needed if not using Codespaces):_
 
 ## 5) GitHub Copilot (VS Code extension)
 
