@@ -1,6 +1,8 @@
 {
   "name": "inventory-app-codespace",
-  "image": "mcr.microsoft.com/devcontainers/python:3.11-bookworm",
+  "build": {
+    "dockerfile": ".devcontainer/Dockerfile"
+  },
   "features": {
     "ghcr.io/azure/azure-dev/azd:latest": {},
     "ghcr.io/devcontainers/features/azure-cli:1": {},
