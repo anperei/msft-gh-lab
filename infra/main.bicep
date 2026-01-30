@@ -10,7 +10,7 @@ param environmentName string
 param location string
 
 @description('Whether to enable Cosmos DB Free Tier (only one per subscription)')
-param cosmosFreeTierEnabled bool = true
+param cosmosFreeTierEnabled bool = false
 
 @description('Backend container image name')
 param backendImageName string = ''
@@ -98,7 +98,7 @@ module frontend 'core/host/container-app.bicep' = {
         name: 'BACKEND_URL'
         value: 'http://localhost'
       }
-    ]  // Backend URL will be set accurately after backend is created
+    ] // Backend URL will be set accurately after backend is created
   }
 }
 
@@ -117,10 +117,10 @@ module backend 'core/host/container-app.bicep' = {
     containerImage: !empty(backendImageName) ? backendImageName : 'nginx:latest'
     targetPort: 8000
     minReplicas: 1
-    enableProbes: true  // Enable health probes for reliability
-    enableManagedIdentity: true  // Use system-assigned managed identity
-    external: false  // Internal: only accessible within Container Apps Environment
-    allowInsecure: true  // Allow HTTP for internal container-to-container communication
+    enableProbes: true // Enable health probes for reliability
+    enableManagedIdentity: true // Use system-assigned managed identity
+    external: false // Internal: only accessible within Container Apps Environment
+    allowInsecure: true // Allow HTTP for internal container-to-container communication
     env: [
       {
         name: 'COSMOS_ENDPOINT'
@@ -137,7 +137,9 @@ module backend 'core/host/container-app.bicep' = {
       {
         name: 'ALLOWED_ORIGINS'
         // Automatically allow the frontend URL + custom origins parameter
-        value: !empty(allowedOrigins) && allowedOrigins != '*' ? '${frontend.outputs.uri},${allowedOrigins}' : frontend.outputs.uri
+        value: !empty(allowedOrigins) && allowedOrigins != '*'
+          ? '${frontend.outputs.uri},${allowedOrigins}'
+          : frontend.outputs.uri
       }
     ]
   }
@@ -175,7 +177,7 @@ module frontendUpdate 'core/host/container-app.bicep' = {
     env: [
       {
         name: 'BACKEND_URL'
-        value: 'http://${backend.outputs.name}.internal.${containerAppsEnvironment.outputs.defaultDomain}'  // Internal DNS name for container-to-container communication
+        value: 'http://${backend.outputs.name}.internal.${containerAppsEnvironment.outputs.defaultDomain}' // Internal DNS name for container-to-container communication
       }
     ]
   }

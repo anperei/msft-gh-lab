@@ -9,9 +9,9 @@ from typing import List
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from db.cosmos import close_cosmos_client, get_cosmos_client
-from schemas import DeviceCreate, DeviceUpdate, DeviceResponse
-import repositories as device_repo
+from src.db.cosmos import close_cosmos_client, get_cosmos_client
+from src.schemas import DeviceCreate, DeviceUpdate, DeviceResponse
+import src.repositories as device_repo
 import os
 
 # Configure logging
@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     """Application lifespan handler for startup and shutdown."""
     logger.info("Starting application...")
-    
+
     # Test Cosmos DB connection on startup (but don't block if it fails)
     try:
         await get_cosmos_client()
@@ -34,9 +34,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Could not connect to Cosmos DB at startup: {e}")
         # Don't fail startup - let individual requests handle the error
-    
+
     yield
-    
+
     # Cleanup on shutdown
     logger.info("Shutting down application...")
     await close_cosmos_client()
