@@ -162,8 +162,6 @@ These labs involve building/running code locally.
 	- Install instructions: https://docs.astral.sh/uv/getting-started/installation/
 6. Provision **Python 3.11+** using uv:
 	- Example: `uv python install 3.11`
-7. Create/sync the backend environment:
-	- From the repo root: `cd backend && uv sync`
 
 ### Verify
 
@@ -173,4 +171,3 @@ These labs involve building/running code locally.
 - Node and npm are available: `node --version` and `npm --version`
 - uv is available: `uv --version`
 - uv-managed Python meets the minimum: `uv run python --version`
-- Backend deps resolve locally: `cd backend && uv sync`
