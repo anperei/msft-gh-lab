@@ -7,9 +7,11 @@ This page walks you through setting up everything you need before starting the l
 You’re ready when you can check all of these:
 
 - [ ] I have an **external tenant** and an **Azure subscription** set up (per the request process)
-- [ ] I have activated my **Azure Visual Studio subscription** and linked it to **GitHub Enterprise**
 - [ ] My **GitHub account** is linked to (or can authenticate with) my **Microsoft account**
 - [ ] I have an **Azure subscription** and can create resources (at least **Contributor** access)
+
+Optional, only needed if not using Codespaces:
+
 - [ ] I have **GitHub Copilot** enabled and the **VS Code extension** installed
 - [ ] I have **GitHub Copilot Chat** enabled and the **VS Code extension** installed
 - [ ] I have **VS Code**, **Git**, and **Docker** installed locally
@@ -54,8 +56,6 @@ This lab expects you to authenticate and access GitHub resources using an identi
 - You can access the lab’s GitHub organization and repositories.
 - If SSO is required, you can successfully authorize SSO for the org.
 
-> Placeholder: Add your org’s exact “linking” or SSO instructions (the flow differs by org policy).
-
 ---
 
 ## 3) Azure subscription
@@ -79,32 +79,11 @@ You need an Azure subscription you can deploy resources into.
 - In the Azure portal, you can create a new **Resource group**.
 - If using CLI, `az account show` returns the expected subscription.
 
-> Placeholder: Add the exact subscription name/ID to use for the lab and any policy constraints (region restrictions, naming rules, etc.).
-
 ---
 
-## 4) (FTE) Activate Visual Studio subscription + link GitHub Enterprise
+## _Optional steps (needed if not using Codespaces):_
 
-Complete this after your Azure subscription is set up.
-
-### Activate your Azure Visual Studio FTE subscription
-
-- Follow the instructions here:
-	- https://microsoft.sharepoint.com/teams/AELBootCamp/SitePages/Activating-Your-Azure-Visual-Studio-FTE-Subscription.aspx?web=1
-
-### Link your Visual Studio subscription benefit to GitHub Enterprise
-
-- Follow the Microsoft Learn steps here:
-	- https://learn.microsoft.com/en-us/visualstudio/subscriptions/access-github
-
-### Verify
-
-- Your Visual Studio subscription is active.
-- GitHub Enterprise access is available/assigned per the Microsoft Learn instructions.
-
----
-
-## 5) GitHub Copilot (VS Code extension)
+## 4) GitHub Copilot (VS Code extension)
 
 You need a Copilot subscription assigned to your GitHub user, and the VS Code extension installed.
 
@@ -123,7 +102,7 @@ You need a Copilot subscription assigned to your GitHub user, and the VS Code ex
 
 ---
 
-## 6) GitHub Copilot Chat (VS Code extension)
+## 5) GitHub Copilot Chat (VS Code extension)
 
 Copilot Chat requires the chat-capable extension and that your Copilot entitlement includes chat.
 
@@ -140,7 +119,7 @@ Copilot Chat requires the chat-capable extension and that your Copilot entitleme
 
 ---
 
-## 7) Local tooling
+## 6) Local tooling
 
 These labs involve building/running code locally.
 
@@ -157,8 +136,6 @@ These labs involve building/running code locally.
 	- Install instructions: https://docs.astral.sh/uv/getting-started/installation/
 6. Provision **Python 3.11+** using uv:
 	- Example: `uv python install 3.11`
-7. Create/sync the backend environment:
-	- From the repo root: `cd backend && uv sync`
 
 ### Verify
 
@@ -168,4 +145,3 @@ These labs involve building/running code locally.
 - Node and npm are available: `node --version` and `npm --version`
 - uv is available: `uv --version`
 - uv-managed Python meets the minimum: `uv run python --version`
-- Backend deps resolve locally: `cd backend && uv sync`
