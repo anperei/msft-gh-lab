@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "[preprovision] Checking Azure CLI authentication..."
+echo "[preprovision] Checking authentication..."
 
-if ! az account show > /dev/null 2>&1; then
-  echo "[preprovision] Not logged in to Azure CLI. Please run 'az login' first."
+# Check if logged in to azd (which is what azd up uses)
+if azd auth login --check-status > /dev/null 2>&1; then
+  echo "[preprovision] Authenticated with azd"
+elif az account show > /dev/null 2>&1; then
+  echo "[preprovision] Authenticated with Azure CLI"
+  SUBSCRIPTION=$(az account show --query name -o tsv)
+  echo "[preprovision] Using subscription: $SUBSCRIPTION"
+else
+  echo "[preprovision] Not logged in. Please run 'azd auth login' or 'az login' first."
   exit 1
 fi
 
-SUBSCRIPTION=$(az account show --query name -o tsv)
-echo "[preprovision] Using subscription: $SUBSCRIPTION"
 echo "[preprovision] Pre-provision checks completed successfully."
