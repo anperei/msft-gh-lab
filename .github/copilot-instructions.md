@@ -122,3 +122,7 @@ uv run uvicorn src.main:app --reload
 - **Frontend main**: `frontend/src/App.tsx` — state management, API calls
 - **Frontend types**: `frontend/src/types.ts` — mirrors backend schemas
 - **Deployment config**: `azure.yaml` — service metadata; `infra/main.bicep` — resource definitions
+
+## 🧪 Testing
+- **Framework**: Use Playwright with `pytest-playwright` for End-to-End tests.
+- **Guidance**: When writing or updating tests, STRICTLY follow the instructions in `.github/instructions/playwright-python.instructions.md`.
