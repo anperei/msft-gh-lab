@@ -1,0 +1,1 @@
+# Tests package for Device Inventory Management application
