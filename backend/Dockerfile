@@ -38,6 +38,8 @@ COPY --from=builder /app/src /app/src
 ENV PATH="/app/.venv/bin:$PATH"
 ENV PYTHONUNBUFFERED=1
 ENV VIRTUAL_ENV="/app/.venv"
+# TEST_MODE: Set to "true" for in-memory testing without Cosmos DB (default: "false")
+ENV TEST_MODE="false"
 
 # Expose port
 EXPOSE 8000

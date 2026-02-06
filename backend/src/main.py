@@ -3,6 +3,7 @@ FastAPI backend for device inventory management.
 Uses Cosmos DB with Azure managed identity for authentication.
 """
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import List
 
@@ -12,7 +13,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.db.cosmos import close_cosmos_client, get_cosmos_client
 from src.schemas import DeviceCreate, DeviceUpdate, DeviceResponse
 import src.repositories as device_repo
-import os
 
 # Configure logging
 logging.basicConfig(
@@ -22,18 +22,41 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+async def _seed_test_data():
+    """Seed in-memory repository with sample devices for testing."""
+    test_devices = [
+        {"name": "Laptop-001", "assigned_to": "Alice Johnson"},
+        {"name": "Laptop-002", "assigned_to": "Bob Smith"},
+        {"name": "Monitor-01", "assigned_to": "Alice Johnson"},
+        {"name": "Keyboard-A", "assigned_to": None},
+        {"name": "Mouse-A", "assigned_to": "Engineering"},
+    ]
+    
+    for device_data in test_devices:
+        device = DeviceCreate(**device_data)
+        await device_repo.create_device(device)
+    
+    logger.info(f"Seeded {len(test_devices)} test devices")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan handler for startup and shutdown."""
     logger.info("Starting application...")
 
-    # Test Cosmos DB connection on startup (but don't block if it fails)
-    try:
-        await get_cosmos_client()
-        logger.info("Cosmos DB connection established")
-    except Exception as e:
-        logger.warning(f"Could not connect to Cosmos DB at startup: {e}")
-        # Don't fail startup - let individual requests handle the error
+    # Seed test data if in TEST_MODE
+    TEST_MODE = os.environ.get("TEST_MODE", "false").lower() == "true"
+    if TEST_MODE:
+        logger.info("TEST_MODE enabled: seeding test data...")
+        await _seed_test_data()
+    else:
+        # Test Cosmos DB connection on startup (but don't block if it fails)
+        try:
+            await get_cosmos_client()
+            logger.info("Cosmos DB connection established")
+        except Exception as e:
+            logger.warning(f"Could not connect to Cosmos DB at startup: {e}")
+            # Don't fail startup - let individual requests handle the error
 
     yield
 

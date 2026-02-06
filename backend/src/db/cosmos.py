@@ -1,6 +1,7 @@
 """
 Cosmos DB client with lazy initialization and DefaultAzureCredential.
 Uses system-assigned managed identity when running in Azure.
+Skipped entirely in TEST_MODE.
 """
 import os
 import logging
@@ -11,6 +12,9 @@ from azure.cosmos import DatabaseProxy, ContainerProxy
 from azure.identity.aio import DefaultAzureCredential
 
 logger = logging.getLogger(__name__)
+
+# Check if running in test mode
+TEST_MODE = os.environ.get("TEST_MODE", "false").lower() == "true"
 
 # Global client instance (lazy-loaded)
 _cosmos_client: Optional[CosmosClient] = None
@@ -30,8 +34,13 @@ async def get_cosmos_client() -> CosmosClient:
     """
     Get or create the Cosmos DB client using DefaultAzureCredential.
     Uses lazy initialization to avoid blocking at import time.
+    Returns None in TEST_MODE.
     """
     global _cosmos_client, _credential
+    
+    if TEST_MODE:
+        logger.info("TEST_MODE enabled: skipping Cosmos DB client initialization")
+        return None
     
     if _cosmos_client is None:
         config = get_cosmos_config()

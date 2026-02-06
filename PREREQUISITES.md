@@ -145,3 +145,51 @@ These labs involve building/running code locally.
 - Node and npm are available: `node --version` and `npm --version`
 - uv is available: `uv --version`
 - uv-managed Python meets the minimum: `uv run python --version`
+
+---
+
+## Running Backend in Test Mode (Local Development)
+
+For local development and testing without requiring an Azure Cosmos DB connection, use the in-memory test mode.
+
+### Quick Start
+
+```bash
+cd backend
+TEST_MODE=true uvicorn src.main:app --reload
+```
+
+The API will start on `http://localhost:8000` with 5 pre-seeded test devices.
+
+### What Happens in Test Mode
+
+- **TEST_MODE=true** activates the in-memory repository
+- **Cosmos DB connection skipped** — no Azure credentials or `COSMOS_ENDPOINT` needed
+- **Test data auto-seeded** on startup (5 sample devices)
+- **In-memory storage** — data persists until the process restarts
+- All CRUD endpoints work: GET, POST, PUT, DELETE
+
+### Test the API
+
+```bash
+# List devices
+curl http://localhost:8000/devices
+
+# Get health check
+curl http://localhost:8000/health
+
+# Create a device
+curl -X POST http://localhost:8000/devices \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Test-Device", "assigned_to": "Developer"}'
+```
+
+### Production Mode (Cosmos DB)
+
+```bash
+# Default behavior or explicit:
+# TEST_MODE=false (default)
+uvicorn src.main:app --host 0.0.0.0 --port 8000
+```
+
+Requires `COSMOS_ENDPOINT` and proper Azure authentication.
